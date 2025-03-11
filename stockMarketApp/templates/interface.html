@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Search</title>
+    <style>
+        body {
+            background-image: url('https://img.freepik.com/free-vector/stock-market-exchange-background-with-chart-diagram-investment_1017-44920.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            width: 320px;
+            position: relative;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        label {
+            font-size: 16px;
+            color: #333;
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+                input[type="text"], input[type="date"] {
+            width: 90%;
+            max-width: 100%; /* Prevents input from going beyond container */
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        input[type="date"] {
+            cursor: pointer;
+            background-color: #f9f9f9;
+        }
+        input[type="date"]:hover {
+            border-color: #007BFF;
+            background-color: #eef6ff;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .suggestions div {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .suggestions div:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Company Search</h2>
+        <form method="post">
+            <label for="company">Company Name</label>
+            <input type="text" id="company" name="company" placeholder="Enter company name" oninput="showSuggestions(this.value)" required>
+            <div id="suggestions" class="suggestions"></div>
+
+            <input type="date" name="startDate" id="startDate" style="
+    width: 95%;
+    padding: 7px;
+    margin-bottom: 8px;
+    border: none;
+    border-radius: 10px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease-in-out;
+" required>
+
+<input type="date" name="endDate" id="endDate" style="
+    width: 95%;
+    padding: 7px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease-in-out;
+" required>
+
+                        <label for="theme" style="font-weight: bold;">Select Chart Theme:</label>
+<select name="theme" id="theme" style="
+    width: 100%;
+    padding: 7px;
+    margin-bottom: 7px; /* Added gap between dropdown and button */
+    border: none;
+    border-radius: 10px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease-in-out;
+">
+    <option value="plotly_dark">Ploty</option>
+    <option value="ggplot2">Ggplot2</option>
+    <option value="seaborn">Seaborn</option>
+    <option value="simple_white">Simple_White</option>
+    <option value="none">None</option>
+</select>
+
+            <button type="submit" formaction="candle">Candle Pattern</button>
+            <button type="submit" formaction="details">Company Stock Price</button>
+            <button type="submit" formaction="predict">Predict</button>
+        </form>
+    </div>
+    <script>
+    document.getElementById('startDate').addEventListener('mouseover', function() {
+        this.style.backgroundColor = '#0056b3';
+    });
+    document.getElementById('startDate').addEventListener('mouseout', function() {
+        this.style.backgroundColor = '#007BFF';
+    });
+
+    document.getElementById('endDate').addEventListener('mouseover', function() {
+        this.style.backgroundColor = '#0056b3';
+    });
+    document.getElementById('endDate').addEventListener('mouseout', function() {
+        this.style.backgroundColor = '#007BFF';
+    });
+    document.getElementById('theme').addEventListener('mouseover', function() {
+        this.style.backgroundColor = '#0056b3';
+    });
+    document.getElementById('theme').addEventListener('mouseout', function() {
+        this.style.backgroundColor = '#007BFF';
+    });
+    // Get Today's Date
+    const today = new Date().toISOString().split("T")[0];
+
+    // Disable Future Dates for Start Date
+    document.getElementById("startDate").setAttribute("max", today);
+
+    // Disable Future Dates for End Date
+    document.getElementById("endDate").setAttribute("max", today);
+
+        async function showSuggestions(value) {
+            const suggestionsBox = document.getElementById('suggestions');
+            suggestionsBox.innerHTML = ''; // Clear suggestions
+
+            if (value.length < 2) return; // Wait for at least 2 characters
+
+            try {
+                const response = await fetch(`/api/company-search?query=${value}`);
+                const companies = await response.json();
+
+                if (companies.length > 0) {
+                    companies.forEach(company => {
+                        const div = document.createElement('div');
+                        div.textContent = `${company.instrument_name} (${company.symbol})`;
+                        div.onclick = () => {
+                            document.getElementById('company').value = company.instrument_name;
+                            suggestionsBox.innerHTML = '';
+                        };
+                        suggestionsBox.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching company data:', error);
+            }
+        }
+    </script>
+</body>
+</html>
