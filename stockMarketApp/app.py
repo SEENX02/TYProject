@@ -18,25 +18,27 @@ def interface():
 
 @app.route("/details", methods=["POST", "GET"])
 def getPriceHistory():
-    companyName = request.form["company"].upper()
+    companyName = request.form["company"].upper().strip()
     startDate = request.form["startDate"]
     endDate = request.form["endDate"]
 
-    print(f"Received ticker: {companyName}")
+    print(f"Received raw ticker: {request.form['company']}")  
+    print(f"Processed ticker before appending: {companyName}")  
 
     if companyName.find(".NS") == -1:
         companyName += ".NS"
 
-    print(f"Checking ticker: {companyName}")
+    print(f"Final ticker sent to API: {companyName}")
 
     companyData = service.getCompanyDetail(companyName, startDate, endDate)
 
     if companyData is None:
-        print(f"Invalid company: {companyName}")
-        return render_template("interface.html", error="Invalid or delisted company. Please try again.")
+        print(f"Error: No data returned for {companyName}")
+        return render_template("interface.html", error="Stock data unavailable. Try another ticker.")
 
     htmlTable = companyData.to_html(classes='table table-striped')
     return render_template("displayTable.html", table=htmlTable)
+
 
 @app.route("/candle", methods=["POST", "GET"])
 def getCandleChart():
