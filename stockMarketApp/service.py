@@ -8,18 +8,27 @@ import LSTMpredict
 import yfinance as yf
 import pandas as pd
 
+import yfinance as yf
+import pandas as pd
+
 def getCompanyDetail(companyName, startDate, endDate):
-    print(f"Fetching stock data for: {companyName} from {startDate} to {endDate}")  # Debugging
+    print(f"Fetching stock data for: {companyName} from {startDate} to {endDate}")  
 
     try:
         company = yf.Ticker(companyName)
         stockData = company.history(period="1d")
 
+        print(f"Raw data for {companyName}:")  
+        print(stockData)  # Print actual data to check if API works
+
         if stockData.empty:
             print(f"Error: {companyName} does not exist or is delisted.")
-            return None  # Return None to indicate an invalid ticker
+            return None  
 
         stockData = yf.download(companyName, start=startDate, end=endDate, progress=False)
+
+        print(f"Downloaded stock data for {companyName}:")
+        print(stockData.head())  # Show the first few rows for debugging
 
         if stockData.empty:
             print(f"Error: No stock data available for {companyName}.")
@@ -31,6 +40,7 @@ def getCompanyDetail(companyName, startDate, endDate):
     except Exception as e:
         print(f"Exception while fetching data for {companyName}: {e}")
         return None
+
 
 
 def getCandle(companyName, startDate, endDate, theme):
