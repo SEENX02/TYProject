@@ -16,24 +16,23 @@ def interface():
 
 @app.route("/details", methods=["POST", "GET"])
 def getPriceHistory():
-
-    # Getting the company Name, Start to End date from the User
     companyName = request.form["company"].upper()
     startDate = request.form["startDate"]
     endDate = request.form["endDate"]
 
-    # Not having .NS attracts bugs
+    print(f"Received ticker: {companyName}")
+
     if companyName.find(".NS") == -1:
         companyName += ".NS"
 
-    # Entering the service payer
+    print(f"Checking ticker: {companyName}")
+
     companyData = service.getCompanyDetail(companyName, startDate, endDate)
 
-    # Empty return from the service layer attracts bugs
-    if companyData.empty:
-        return render_template("interface.html")
+    if companyData is None:
+        print(f"Invalid company: {companyName}")
+        return render_template("interface.html", error="Invalid or delisted company. Please try again.")
 
-    # Displaying the chart on the webpage
     htmlTable = companyData.to_html(classes='table table-striped')
     return render_template("displayTable.html", table=htmlTable)
 
