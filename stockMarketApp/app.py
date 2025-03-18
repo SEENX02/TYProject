@@ -4,6 +4,8 @@ from flask import *
 import service
 import secrets
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppresses INFO and DEBUG messages
 mySessionKey = secrets.token_hex(16)
 
 #This is my Flask App
