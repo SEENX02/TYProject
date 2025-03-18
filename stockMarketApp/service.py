@@ -13,7 +13,8 @@ import pandas as pd
 
 def getCompanyDetail(companyName, startDate, endDate):
     print(f"Fetching stock data for: {companyName} from {startDate} to {endDate}")  
-
+    time.sleep(1)
+    
     try:
         stockData = yf.download(companyName, start=startDate, end=endDate)
         print(f"Raw data for {companyName}:")  
