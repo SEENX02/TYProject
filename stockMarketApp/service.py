@@ -15,25 +15,14 @@ def getCompanyDetail(companyName, startDate, endDate):
     print(f"Fetching stock data for: {companyName} from {startDate} to {endDate}")  
 
     try:
-        company = yf.Ticker(companyName)
-        stockData = company.history(period="1d")
-
+        stockData = yf.download(companyName, start=startDate, end=endDate)
         print(f"Raw data for {companyName}:")  
         print(stockData)  # Print actual data to check if API works
 
         if stockData.empty:
             print(f"Error: {companyName} does not exist or is delisted.")
             return None  
-
-        stockData = yf.download(companyName, start=startDate, end=endDate, progress=False)
-
-        print(f"Downloaded stock data for {companyName}:")
-        print(stockData.head())  # Show the first few rows for debugging
-
-        if stockData.empty:
-            print(f"Error: No stock data available for {companyName}.")
-            return None
-
+            
         print(f"Successfully fetched data for {companyName}.")
         return pd.DataFrame(stockData)
 
