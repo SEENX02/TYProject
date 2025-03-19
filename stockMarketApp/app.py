@@ -3,8 +3,7 @@ import yfinance as yf  # ✅ Corrected import
 from flask import *
 import service
 import secrets
-from flask_session.__init__ import Session # ✅ Added session handling
-
+from flask import sessions
 # Suppress TensorFlow debug messages
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  
 
