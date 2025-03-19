@@ -12,7 +12,7 @@ def getCompanyDetail(companyName, startDate, endDate):
         try:
             time.sleep(1)  # ✅ Prevent API rate-limiting
             
-            stockData = yf.download(companyName, start=startDate, end=endDate, progress=False)
+            stockData = yf.download(companyName, start=startDate, end=endDate, progress=False, timeout = 3)
             if not stockData.empty:
                 print(f"✅ Successfully fetched data for {companyName} on attempt {attempt+1}")
                 return pd.DataFrame(stockData)
