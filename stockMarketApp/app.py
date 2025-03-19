@@ -12,7 +12,6 @@ mySessionKey = secrets.token_hex(16)
 # ✅ Flask app setup
 app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"  # ✅ Ensure session works on Render
-Session(app)
 
 @app.route("/")
 def interface():
