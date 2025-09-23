@@ -10,7 +10,7 @@ app = Flask(__name__)
 @app.route("/")
 def interface():
     #This is to route to the main page
-    return render_template("interface.html")
+    return render_template("index.html")
 
 @app.route("/details", methods=["POST", "GET"])
 def getPriceHistory():
@@ -30,7 +30,7 @@ def getPriceHistory():
 
     # Empty return from the service layer attracts bugs
     if companyData.empty:
-        return render_template("interface.html")
+        return render_template("index.html")
 
     # Displaying the chart on the webpage
     htmlTable = companyData.to_html(classes='table table-striped')
@@ -49,7 +49,7 @@ def getCandleChart():
     result = service.getCandle(companyName, startDate, endDate, theme)
 
     if result is None:  # If getCandle() returned None, show an error message on homepage
-        return redirect(url_for("interface", error="Invalid company name. Please try again."))
+        return redirect(url_for("index", error="Invalid company name. Please try again."))
 
     return redirect("/")  # Redirect to homepage after generating the chart
 
@@ -81,14 +81,15 @@ def processPredict():
         result = service.predict(companyName, startDate, endDate, theme)
 
         if result is None:  # If prediction fails due to invalid company
-            return redirect(url_for("interface", error="Invalid company name. Please try again."))
+            return redirect(url_for("index", error="Invalid company name. Please try again."))
 
     except Exception as e:
         print("Exception occurred:", e)
-        return render_template("interface.html", error="An error occurred during prediction. Please try again.")
+        return render_template("index.html", error="An error occurred during prediction. Please try again.")
 
-    return render_template("interface.html")
+    return render_template("index.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
